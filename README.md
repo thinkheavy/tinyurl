@@ -29,7 +29,7 @@ npm test
 
 Creates a new ShortCode for the specified URL.
 
-*Query Parameters*
+*Body*
 ```
 {
     url: 'https://melodyvr.com'
