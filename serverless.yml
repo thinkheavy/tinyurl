@@ -1,0 +1,60 @@
+service: melodyvr-tinyurl
+
+plugins:
+  - serverless-dynamodb-local
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+
+functions:
+  save:
+    handler: urls/create.create
+    events:
+     - http:
+         path: /
+         method: post
+
+  visit:
+    handler: urls/visit.visit
+    events:
+     - http:
+         path: /{shortCode}
+         method: get
+
+  stats:
+    handler: urls/get.get
+    events:
+     - http:
+         path: /{shortCode}/stats
+         method: get
+
+resources:
+  Resources:
+    UrlsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: shortCode
+            AttributeType: S
+        KeySchema:
+          - AttributeName: shortCode
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
