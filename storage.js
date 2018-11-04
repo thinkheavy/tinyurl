@@ -3,6 +3,7 @@
 const validUrl = require('valid-url');
 const shortid = require('shortid');
 const AWS = require('aws-sdk');
+const { makeError } = require('./utils');
 
 const TableName = process.env.DYNAMODB_TABLE;
 let dynamo = new AWS.DynamoDB.DocumentClient();
@@ -16,9 +17,7 @@ module.exports.setClient = newDynamo => {
 module.exports.findOrCreateItem = url => {
 
   if(!validUrl.isUri(url)){
-    const e = new Error('The URL provided is not well formed.');
-    e.statusCode = 400;
-    return Promise.reject(e);
+    return Promise.reject( makeError('The URL provided is not well formed.', 400) );
   }
 
   return getItemByUrl(url).then(item=>{
@@ -26,7 +25,7 @@ module.exports.findOrCreateItem = url => {
 
     return createItem(url).then(item=>{
       if(item) return item;
-      throw new Error('Error Creating Short URL.');
+      throw makeError('Error Creating Short URL.');
     });
   });
 
@@ -79,11 +78,7 @@ module.exports.getItem = shortCode => {
   };
 
   return dynamo.get(params).promise().then(result => {
-    if(!result.Item){
-      const e = new Error('Could not find Short URL');
-      e.statusCode = 404;
-      throw e;
-    }
+    if(!result.Item) throw makeError('Could not find Short URL', 404);
 
     return result.Item;
   });
@@ -113,10 +108,8 @@ module.exports.visitItem = shortCode => {
     ReturnValues: 'ALL_NEW',
   };
 
-  return dynamo.update(params).promise().then(result=>result.Attributes).catch((error)=>{
-    const e = new Error('Could not find Short URL');
-    e.statusCode = 404;
-    throw e;
+  return dynamo.update(params).promise().then(result=>result.Attributes).catch(error=>{
+    throw makeError('Could not find Short URL.', 404);
   });
 };
 

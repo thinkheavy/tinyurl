@@ -22,21 +22,21 @@ provider:
 
 functions:
   save:
-    handler: urls/create.create
+    handler: tinyurl.create
     events:
      - http:
          path: /
          method: post
 
   visit:
-    handler: urls/visit.visit
+    handler: tinyurl.visit
     events:
      - http:
          path: /{shortCode}
          method: get
 
   stats:
-    handler: urls/get.get
+    handler: tinyurl.stats
     events:
      - http:
          path: /{shortCode}/stats

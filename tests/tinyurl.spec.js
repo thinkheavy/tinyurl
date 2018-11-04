@@ -41,7 +41,7 @@ afterAll(() => {
 
 describe('Saving Short URLs', () => {
 
-  it('Should find or Save a URL', done => {
+  it('should find or Save a URL', done => {
     storage.findOrCreateItem(testURL).then(result => {
       expect(result).to.exist;
       expect(result.shortCode).to.be.a('string');
@@ -53,7 +53,7 @@ describe('Saving Short URLs', () => {
     });
   });
 
-  it('Should reuse existing ShortCodes', done => {
+  it('should reuse existing ShortCodes', done => {
     storage.findOrCreateItem(testURL).then(result => {
       expect(result).to.exist;
       expect(result.shortCode).to.be.a('string');
@@ -65,7 +65,7 @@ describe('Saving Short URLs', () => {
     });
   });
 
-  it('Should check for a bad URL', done => {
+  it('should check for a bad URL', done => {
     storage.findOrCreateItem(badTestURL).then(result => {
       done('Should have errored creating item!');
     }).catch(error=>{
@@ -73,7 +73,7 @@ describe('Saving Short URLs', () => {
     });
   });
 
-  it('Should check for an empty string URL', done => {
+  it('should check for an empty string URL', done => {
     storage.findOrCreateItem(emptyTestURL).then(result => {
       done('Should have errored creating item!');
     }).catch(error=>{
@@ -81,7 +81,7 @@ describe('Saving Short URLs', () => {
     });
   });
 
-  it('Should check for an undefined URL while creating', done => {
+  it('should check for an undefined URL while creating', done => {
     storage.findOrCreateItem().then(result => {
       done('Should have errored creating item!');
     }).catch(error=>{
@@ -94,7 +94,7 @@ describe('Saving Short URLs', () => {
 
 describe('Interacting with Short URLs', () => {
 
-  it('Should get a URL using a ShortCode', done => {
+  it('should get a URL using a ShortCode', done => {
     storage.findOrCreateItem(testURL).then(item => {
       storage.getItem(item.shortCode).then(result => {
         expect(result).to.exist;
@@ -106,7 +106,7 @@ describe('Interacting with Short URLs', () => {
     });
   });
 
-  it('Should get a URL using a URL', done => {
+  it('should get a URL using a URL', done => {
     storage.findOrCreateItem(testURL).then(item => {
       storage.getItemByUrl(testURL).then(result => {
         expect(result).to.exist;
@@ -116,7 +116,7 @@ describe('Interacting with Short URLs', () => {
     });
   });
 
-  it('Should increment visits and set new viewedAt when visited', done => {
+  it('should increment visits and set new viewedAt when visited', done => {
     storage.findOrCreateItem(testURL).then(item => {
       expect(item.visits).to.be.a('number');
       storage.visitItem(item.shortCode).then(result => {
@@ -129,7 +129,7 @@ describe('Interacting with Short URLs', () => {
     });
   });
 
-  it('Should error and return 404 when visiting a missing ShortCode', done => {
+  it('should error and return 404 when visiting a missing ShortCode', done => {
     storage.visitItem(badShortcode).then(item => {
       done('Should have errored finding item!');
     }).catch((error)=>{
