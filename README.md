@@ -88,7 +88,6 @@ Displays the stats for a given ShortCode.
 *Fail Example*
 ```
 {
-    "success": false,
     "error": "Could not find Short URL"
 }
 ```
