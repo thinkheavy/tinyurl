@@ -1,5 +1,5 @@
 # MelodyVR Code Test
-Technical test for MelodyVR. A URL shortener api using the Serverless Framework, AWS Lambda and DynamoDB.
+Technical test for MelodyVR. A URL shortener API using the Serverless Framework, AWS Lambda and DynamoDB.
 
 ### Pre-requisites
 * Node 8 or above
@@ -29,14 +29,14 @@ npm test
 
 Creates a new ShortCode for the specified URL.
 
-BODY
+*Query Parameters*
 ```
 {
     url: 'https://melodyvr.com'
 }
 ```
 
-*SUCCESS EXAMPLE*
+*Success Example*
 ```
 {
     "url": "https://melodyvr.com",
@@ -47,7 +47,7 @@ BODY
 }
 ```
 
-*FAIL EXAMPLE*
+*Fail Example*
 ```
 {
     "error": "The URL provided is not well formed."
@@ -59,10 +59,11 @@ BODY
 
 Redirects to a URL from a ShortCode, increments the visits and sets a new viewedAt timestamp.
 
-*SUCCESS EXAMPLE*
+*Success Example*
+
 User is redirected to the URL for the ShortCode.
 
-*FAIL EXAMPLE*
+*Fail Example*
 ```
 {
     "error": "Could not find Short URL"
@@ -73,7 +74,7 @@ User is redirected to the URL for the ShortCode.
 
 Displays the stats for a given ShortCode.
 
-*SUCCESS EXAMPLE*
+*Success Example*
 ```
 {
     "shortCode": "eOl14do_5",
@@ -84,7 +85,7 @@ Displays the stats for a given ShortCode.
 }
 ```
 
-*FAIL EXAMPLE*
+*Fail Example*
 ```
 {
     "success": false,

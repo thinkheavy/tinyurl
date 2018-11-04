@@ -7,6 +7,10 @@
     "test": "jest",
     "watch": "jest --watchAll"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thinkheavy/tinyurl.git"
+  },
   "author": "John Richard Chipps-Harding <john@thinkheavy.com>",
   "license": "ISC",
   "dependencies": {
