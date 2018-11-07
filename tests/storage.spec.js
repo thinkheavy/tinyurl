@@ -94,38 +94,35 @@ describe('Saving Short URLs', () => {
 
 describe('Interacting with Short URLs', () => {
 
+  let item;
+  beforeAll(() => storage.findOrCreateItem(testURL).then(i=>{item=i}) );
+
   it('should get a URL using a ShortCode', done => {
-    storage.findOrCreateItem(testURL).then(item => {
-      storage.getItem(item.shortCode).then(result => {
-        expect(result).to.exist;
-        expect(result.url).to.equal(testURL);
-        expect(result.shortCode).to.equal(item.shortCode);
-        expect(result.visits).to.be.a('number');
-        done();
-      });
+    storage.getItem(item.shortCode).then(result => {
+      expect(result).to.exist;
+      expect(result.url).to.equal(testURL);
+      expect(result.shortCode).to.equal(item.shortCode);
+      expect(result.visits).to.be.a('number');
+      done();
     });
   });
 
   it('should get a URL using a URL', done => {
-    storage.findOrCreateItem(testURL).then(item => {
-      storage.getItemByUrl(testURL).then(result => {
-        expect(result).to.exist;
-        expect(result.url).to.equal(testURL);
-        done();
-      });
+    storage.getItemByUrl(testURL).then(result => {
+      expect(result).to.exist;
+      expect(result.url).to.equal(testURL);
+      done();
     });
   });
 
   it('should increment visits and set new viewedAt when visited', done => {
-    storage.findOrCreateItem(testURL).then(item => {
-      expect(item.visits).to.be.a('number');
-      storage.visitItem(item.shortCode).then(result => {
-        expect(result).to.exist;
-        expect(result.visits).to.be.a('number');
-        expect(result.visits).to.equal(item.visits+1);
-        expect(result.viewedAt).to.not.equal(item.viewedAt);
-        done();
-      });
+    expect(item.visits).to.be.a('number');
+    storage.visitItem(item.shortCode).then(result => {
+      expect(result).to.exist;
+      expect(result.visits).to.be.a('number');
+      expect(result.visits).to.equal(item.visits+1);
+      expect(result.viewedAt).to.not.equal(item.viewedAt);
+      done();
     });
   });
 

@@ -4,8 +4,8 @@
   "description": "Serverless functions to manage a tinyurl-like service.",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "watch": "jest --watchAll"
+    "test": "jest --verbose=true",
+    "watch": "jest --watchAll --verbose=true"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "aws-sdk": "^2.348.0",
     "chai": "^4.2.0",
     "jest": "^23.6.0",
+    "lambda-tester": "^3.5.0",
     "serverless": "^1.32.0",
     "serverless-dynamodb-local": "^0.2.35"
   }
