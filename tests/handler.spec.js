@@ -16,23 +16,18 @@ const emptyTestURL = '';
 const badShortcode = 'bad';
 
 
-beforeAll(() => {
-  return new Promise((resolve, reject) => {
-    // Set local Dynamo Client to local server
-    const dynamo = new AWS.DynamoDB.DocumentClient({
-      region: 'localhost',
-      endpoint: 'http://localhost:8000'
-    });
-    storage.setClient(dynamo);
-
-    // Clear the test data
-    storage.getItemByUrl(testURL).then(item => {
-      if(!item) return resolve();
-      storage.deleteItem(item.shortCode).then(result => {
-        resolve();
-      });
-    });
+beforeAll(async () => {
+  const dynamo = new AWS.DynamoDB.DocumentClient({
+    region: 'localhost',
+    endpoint: 'http://localhost:8000'
   });
+  storage.setClient(dynamo);
+
+  // Clear the test data
+  const item = await storage.getItemByUrl(testURL)
+  if(!item) return;
+
+  await storage.deleteItem(item.shortCode);
 });
 
 afterAll(() => {

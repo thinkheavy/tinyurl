@@ -14,26 +14,21 @@ module.exports.setClient = newDynamo => {
 };
 
 // Try and find an existing Short URL or create a new one
-module.exports.findOrCreateItem = url => {
+module.exports.findOrCreateItem = async url => {
+  if(!validUrl.isUri(url)) throw makeError('The URL provided is not well formed.', 400);
 
-  if(!validUrl.isUri(url)){
-    return Promise.reject( makeError('The URL provided is not well formed.', 400) );
-  }
+  const existingItem = await getItemByUrl(url);
+  if(existingItem) return existingItem;
 
-  return getItemByUrl(url).then(item=>{
-    if(item) return item;
+  const newItem = await createItem(url);
+  if(newItem) return newItem;
 
-    return createItem(url).then(item=>{
-      if(item) return item;
-      throw makeError('Error Creating Short URL.');
-    });
-  });
-
+  throw makeError('Error Creating Short URL.');
 };
 
 
 // Save a new Short URL
-const createItem = url => {
+const createItem = async url => {
   const now = new Date().getTime();
 
   const Item = {
@@ -48,11 +43,13 @@ const createItem = url => {
   const params = { TableName, Item };
 
   // Try and save the Url
-  return dynamo.put(params).promise().then(()=>Item);
+  await dynamo.put(params).promise();
+
+  return Item;
 };
 
 // Try and find an item by URL
-const getItemByUrl = module.exports.getItemByUrl = url => {
+const getItemByUrl = module.exports.getItemByUrl = async url => {
   const params = {
     TableName,
     FilterExpression: '#url = :url',
@@ -64,12 +61,14 @@ const getItemByUrl = module.exports.getItemByUrl = url => {
     }
   };
 
-  return dynamo.scan(params).promise().then(result => (result.Items && result.Items.length) ? result.Items[0] : null );
+  const { Items } = await dynamo.scan(params).promise();
+
+  return (Items && Items.length) ? Items[0] : null;
 };
 
 
 // Get a ShortCode
-module.exports.getItem = shortCode => {
+module.exports.getItem = async shortCode => {
   const params = {
     TableName,
     Key: {
@@ -77,16 +76,14 @@ module.exports.getItem = shortCode => {
     }
   };
 
-  return dynamo.get(params).promise().then(result => {
-    if(!result.Item) throw makeError('Could not find Short URL', 404);
-
-    return result.Item;
-  });
+  const result = await dynamo.get(params).promise();
+  if(!result.Item) throw makeError('Could not find Short URL', 404);
+  return result.Item;
 };
 
 
 // Visit a ShortCode, and by doing so increment the visits and update the viewedAt timestamp
-module.exports.visitItem = shortCode => {
+module.exports.visitItem = async shortCode => {
   const now = new Date().getTime();
 
   const params = {
@@ -108,14 +105,17 @@ module.exports.visitItem = shortCode => {
     ReturnValues: 'ALL_NEW',
   };
 
-  return dynamo.update(params).promise().then(result=>result.Attributes).catch(error=>{
+  try {
+    const result = await dynamo.update(params).promise();
+    return result.Attributes;
+  } catch (error) {
     throw makeError('Could not find Short URL.', 404);
-  });
+  }
 };
 
 
 // Deletes an item
-module.exports.deleteItem = shortCode => {
+module.exports.deleteItem = async shortCode => {
   const params = {
     TableName,
     Key: {
@@ -123,5 +123,5 @@ module.exports.deleteItem = shortCode => {
     }
   };
 
-  return dynamo.delete(params).promise();
+  await dynamo.delete(params).promise();
 };
